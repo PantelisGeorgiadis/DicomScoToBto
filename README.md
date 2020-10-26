@@ -1,8 +1,10 @@
 ﻿# DicomScoToBto
-DicomScoToBto is a utility to decode Hologic Breast Tomosynthesis Objects, that was created based on Dave Harvey's investigation results found [here](https://groups.google.com/g/comp.protocols.dicom/c/aMrgjrMtyVc).
+DicomScoToBto is a utility to decode Hologic Breast Tomosynthesis Objects, that was created based on Dave Harvey's investigation results found [here](https://groups.google.com/g/comp.protocols.dicom/c/aMrgjrMtyVc).\
 The utility is using the [fo-dicom](https://github.com/fo-dicom/fo-dicom) library for all DICOM-related functions.
 
 ### Build
+![build main](https://github.com/PantelisGeorgiadis/DicomScoToBto/workflows/build/badge.svg?branch=main)
+
 	cd Build
 	.\Build.ps1
 [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) or [Build Tools for Visual Studio 2019](https://aka.ms/vs/16/release/vs_buildtools.exe) is required.

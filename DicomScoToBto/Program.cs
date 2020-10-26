@@ -119,7 +119,7 @@ namespace DicomScoToBto
         }
 
         /// <summary>
-        /// Registers the custom JPEG-LS decoders
+        /// Registers DICOM implementations
         /// </summary>
         static void RegisterDicomImplementations()
         {

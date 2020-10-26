@@ -1,0 +1,21 @@
+name: build
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  net-framework:
+    runs-on: windows-latest
+    steps:
+      - name: Setup MSBuild.exe
+        uses: warrenbuckley/Setup-MSBuild@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+      - name: Restore nuget packages
+        run: nuget restore DicomScoToBto.sln
+      - name: Build
+        run: msbuild DicomScoToBto.sln -p:Configuration=Release -maxCpuCount
