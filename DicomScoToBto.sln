@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DicomScoToBto", "DicomScoToBto\DicomScoToBto.csproj", "{2925D613-4B27-43A1-B747-F8679B0DAC2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{28EC32F1-192E-4ACA-B509-7EB12A5943FF}"
+	ProjectSection(SolutionItems) = preProject
+		Build\Build.ps1 = Build\Build.ps1
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2925D613-4B27-43A1-B747-F8679B0DAC2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2925D613-4B27-43A1-B747-F8679B0DAC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2925D613-4B27-43A1-B747-F8679B0DAC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2925D613-4B27-43A1-B747-F8679B0DAC2B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {278120D9-6BA6-472C-8387-5B0FAC02F29A}
+	EndGlobalSection
+EndGlobal
