@@ -7,7 +7,7 @@ The utility is using the [fo-dicom](https://github.com/fo-dicom/fo-dicom) librar
 
 	cd Build
 	.\Build.ps1
-[Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) or [Build Tools for Visual Studio 2019](https://aka.ms/vs/16/release/vs_buildtools.exe) is required.
+[Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) or [Build Tools for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) is required.
 
 ### Use
 	DicomScoToBto.exe -i input_file -o output_file

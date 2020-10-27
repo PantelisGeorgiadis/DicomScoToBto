@@ -6,7 +6,7 @@ Try {
 	$tempDir = [System.IO.Path]::GetTempPath()
 	$vsWherePath = Join-Path $tempDir 'vswhere.exe'
 	$vsWhereUrl = 'https://github.com/microsoft/vswhere/releases/download/2.8.4/vswhere.exe'
-    (New-Object System.Net.WebClient).DownloadFile($vsWhereUrl, $vsWherePath)
+	(New-Object System.Net.WebClient).DownloadFile($vsWhereUrl, $vsWherePath)
 
 	# Locate VS2019 MsBuild
 	$msBuildPath = & $vsWherePath -Latest -Requires Microsoft.Component.MSBuild -Find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
@@ -32,5 +32,5 @@ Try {
 	# Build
 	Invoke-Expression "& '$msBuildPath' $project /p:Configuration=Release"
 } Catch {
-    Write-Host $Error[0].Exception
+	Write-Host $Error[0].Exception
 }
