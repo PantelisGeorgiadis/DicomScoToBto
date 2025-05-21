@@ -16,10 +16,17 @@ jobs:
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v2
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3       
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
       - name: Restore nuget packages
         run: nuget restore DicomScoToBto.sln
       - name: Build
-        run: msbuild DicomScoToBto.sln -p:Configuration=Release -maxCpuCount
+        run: >-
+          msbuild DicomScoToBto.sln -p:Configuration=Release -p:UseSharedCompilation=false
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
