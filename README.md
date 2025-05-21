@@ -3,7 +3,7 @@ DicomScoToBto is a utility to decode Hologic Breast Tomosynthesis Objects, that 
 The utility is using the [fo-dicom](https://github.com/fo-dicom/fo-dicom) library for all DICOM-related functions.
 
 ### Build
-![build main](https://github.com/PantelisGeorgiadis/DicomScoToBto/workflows/build/badge.svg?branch=main)
+![build main](https://github.com/PantelisGeorgiadis/DicomScoToBto/actions/workflows/build.yml/badge.svg?branch=main)
 
 	cd Build
 	.\Build.ps1
