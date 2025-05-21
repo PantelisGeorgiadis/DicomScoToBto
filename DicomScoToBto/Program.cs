@@ -24,14 +24,20 @@ namespace DicomScoToBto
         /// <summary>
         /// The Hologic SCO input file
         /// </summary>
-        [Option('i', "Input", Required = true, HelpText = "Input Hologic SCO file")]
+        [Option('i', "Input", Required = true, HelpText = "Input Hologic SCO file.")]
         public String Input { get; set; }
 
         /// <summary>
         /// The DICOM BTO output file
         /// </summary>
-        [Option('o', "Output", Required = true, HelpText = "Output DICOM BTO file")]
+        [Option('o', "Output", Required = true, HelpText = "Output DICOM BTO file.")]
         public String Output { get; set; }
+
+        /// <summary>
+        /// Optionally transcode to Explicit Little Endian
+        /// </summary>
+        [Option('t', "Transcode", Required = false, Default = false, HelpText = "Transcode output to Explicit Little Endian.")]
+        public bool Transcode { get; set; }
     }
 
     /// <summary>
@@ -42,7 +48,7 @@ namespace DicomScoToBto
         /// <summary>
         /// The entry point
         /// </summary>
-        static void Main(string[] args)
+        static void Main(String[] args)
         {
             // Initialize logging
             InitializeLogging();
@@ -61,7 +67,7 @@ namespace DicomScoToBto
                     try
                     {
                         // ... do the actual decoding
-                        DecodeScoToBto(o.Input, o.Output);
+                        DecodeScoToBto(o.Input, o.Output, o.Transcode);
                     }
                     catch (Exception ex)
                     {
@@ -138,7 +144,8 @@ namespace DicomScoToBto
         /// </summary>
         /// <param name="inputFile">The Hologic SCO input file</param>
         /// <param name="outputFile">The DICOM BTO output file</param>
-        static void DecodeScoToBto(String inputFile, String outputFile)
+        /// <param name="transcode">Transcode output to Explicit Little Endian</param>
+        static void DecodeScoToBto(String inputFile, String outputFile, bool transcode)
         {
             // Check for a valid DICOM header
             if (!DicomFile.HasValidHeader(inputFile))
@@ -209,7 +216,7 @@ namespace DicomScoToBto
             for (var i = 0; i < frameCount; i++)
             {
                 binaryReader.BaseStream.Seek(frameIndexes[i], SeekOrigin.Begin);
-                var bytesToRead = frameIndexes[i + 1] - frameIndexes[i] - 1;
+                var bytesToRead = frameIndexes[i + 1] - frameIndexes[i];
                 var frameBytes = binaryReader.ReadBytes(bytesToRead);
                 frames.Add(frameBytes);
             }
@@ -242,7 +249,7 @@ namespace DicomScoToBto
             newDataset.AddOrUpdate<ushort>(DicomTag.Rows, rows);
             newDataset.AddOrUpdate<ushort>(DicomTag.BitsAllocated, 16);
             newDataset.AddOrUpdate<ushort>(DicomTag.BitsStored, bitsStored);
-            newDataset.AddOrUpdate<ushort>(DicomTag.HighBit, (ushort) (bitsStored - 1));
+            newDataset.AddOrUpdate<ushort>(DicomTag.HighBit, (ushort)(bitsStored - 1));
             newDataset.AddOrUpdate(DicomTag.PhotometricInterpretation, PhotometricInterpretation.Monochrome2.Value);
 
             // New pixel data
@@ -258,11 +265,11 @@ namespace DicomScoToBto
                     {
                         // Create the JPEG-LS header
                         // Start of image (SOI) marker
-                        frameBinaryWriter.Write(new byte[] {0xFF, 0xD8});
+                        frameBinaryWriter.Write(new byte[] { 0xFF, 0xD8 });
                         // Start of JPEG-LS frame (SOF55) marker – marker segment follows
-                        frameBinaryWriter.Write(new byte[] {0xFF, 0xF7});
+                        frameBinaryWriter.Write(new byte[] { 0xFF, 0xF7 });
                         // Length of marker segment = 11 bytes including the length field
-                        frameBinaryWriter.Write(new byte[] {0x00, 0x0B});
+                        frameBinaryWriter.Write(new byte[] { 0x00, 0x0B });
                         // P = Precision
                         frameBinaryWriter.Write(bitsStored);
                         // Y = Number of lines (big endian)
@@ -270,29 +277,29 @@ namespace DicomScoToBto
                         // X = Number of columns (big endian)
                         frameBinaryWriter.Write(SwapBytes(columns));
                         // Nf = Number of components in the frame = 1
-                        frameBinaryWriter.Write((byte) 0x01);
+                        frameBinaryWriter.Write((byte)0x01);
                         // C1 = Component ID = 1 (first and only component)
-                        frameBinaryWriter.Write((byte) 0x01);
+                        frameBinaryWriter.Write((byte)0x01);
                         // Sub-sampling: H1 = 1, V1 = 1
-                        frameBinaryWriter.Write((byte) 0x11);
+                        frameBinaryWriter.Write((byte)0x11);
                         // Tq1 = 0 (this field is always 0)
-                        frameBinaryWriter.Write((byte) 0x00);
+                        frameBinaryWriter.Write((byte)0x00);
                         // Start of scan (SOS) marker
-                        frameBinaryWriter.Write(new byte[] {0xFF, 0xDA});
+                        frameBinaryWriter.Write(new byte[] { 0xFF, 0xDA });
                         // Length of marker segment = 8 bytes including the length field
-                        frameBinaryWriter.Write(new byte[] {0x00, 0x08});
+                        frameBinaryWriter.Write(new byte[] { 0x00, 0x08 });
                         // Ns = Number of components for this scan = 1
-                        frameBinaryWriter.Write((byte) 0x01);
+                        frameBinaryWriter.Write((byte)0x01);
                         // Ci = Component ID = 1
-                        frameBinaryWriter.Write((byte) 0x01);
+                        frameBinaryWriter.Write((byte)0x01);
                         // Tm1 = Mapping table index = 0 (no mapping table)
-                        frameBinaryWriter.Write((byte) 0x00);
+                        frameBinaryWriter.Write((byte)0x00);
                         // NEAR 
                         frameBinaryWriter.Write(near);
                         // ILV = 0 (interleave mode = non-interleaved)
-                        frameBinaryWriter.Write((byte) 0x00);
+                        frameBinaryWriter.Write((byte)0x00);
                         // Al = 0, Ah = 0 (no point transform)
-                        frameBinaryWriter.Write((byte) 0x00);
+                        frameBinaryWriter.Write((byte)0x00);
 
                         // Append the extracted frame data
                         // Frame data
@@ -300,7 +307,7 @@ namespace DicomScoToBto
 
                         // Close the JPEG-LS frame
                         // End of image (EOI) marker
-                        frameBinaryWriter.Write(new byte[] {0xFF, 0xD9});
+                        frameBinaryWriter.Write(new byte[] { 0xFF, 0xD9 });
                         frameBinaryWriter.Flush();
 
                         var frameBytes = frameMemoryStream.ToArray();
@@ -310,17 +317,11 @@ namespace DicomScoToBto
                 }
             }
 
-            // Decompress the new DICOM file to Explicit Little Endian
-            // This step is performed because the resulting JPEG-LS codestream cannot be decoded
-            // on several viewers (_validBits are equal to zero at the end of the decoding process, needs more investigation...)
-            // For this reason, the application is performing the decompression, silencing the decoding errors
-            // and producing valid multi-frame part10 DICOM files.
-            var decompressedDataset = newDataset.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
+            // Create a new DICOM file object from the constructed and potentially transcoded dataset
+            var newDicomFile =
+                new DicomFile(transcode ? newDataset.Clone(DicomTransferSyntax.ExplicitVRLittleEndian) : newDataset);
 
-            // Create a new DICOM file object from the decompress dataset
-            var newDicomFile = new DicomFile(decompressedDataset);
-
-            // Persist the decompressed DICOM file to disk
+            // Persist the new DICOM file to disk
             newDicomFile.Save(outputFile);
         }
 
@@ -331,7 +332,7 @@ namespace DicomScoToBto
         /// <returns>The swapped unsigned short</returns>
         static ushort SwapBytes(ushort u)
         {
-            return (ushort) ((ushort) ((u & 0xff) << 8) | ((u >> 8) & 0xff));
+            return (ushort)((ushort)((u & 0xff) << 8) | ((u >> 8) & 0xff));
         }
     }
 }
